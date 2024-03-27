@@ -1,4 +1,4 @@
 %clang
 %c -std=gnu11
 %cpp -std=gnu++14
--I/usr/include/mysql
+-I/usr/include/mysql/
