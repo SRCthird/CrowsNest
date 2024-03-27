@@ -23,6 +23,7 @@ public:
   std::string getKey();
   std::string getPem();
   std::string getHostname();
+  std::string getDatabaseConnection();
 
 private:
   std::string fileName;

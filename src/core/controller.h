@@ -50,10 +50,10 @@ public:
   };
 
   void setRoot(std::string root) { this->root = root; }
-  const std::string route(const std::string append) {
+  std::string route(const std::string append) {
     return this->root + append;
   }
-  const std::string route() { return this->root; }
+  std::string route() { return this->root; }
   inline void run() { app.port(port).multithreaded().run(); };
 
 private:
