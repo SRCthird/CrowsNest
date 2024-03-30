@@ -8,19 +8,31 @@
 #include <crow/utility.h>
 #include <soci/soci.h>
 #include <soci/mysql/soci-mysql.h>
-#include <mysql/mysql.h>
 
-struct User;
 
 class app_service {
 public:
+  struct User {
+    int id;
+    std::string name;
+
+    crow::json::wvalue to_json() const {
+      crow::json::wvalue j;
+      j["id"] = id;
+      j["name"] = name;
+      return j;
+    }
+
+    User() : id(0), name("") {}
+    User(int id, std::string name) : id(id), name(name) {}
+  };
   app_service(soci::session& sql) : sql(sql) {}
 
   void create(const User& data);
   void create(const std::vector<User>& data);
-  User read(std::vector<int> ids);
   User read(int id);
-  User read();
+  std::vector<User> read(std::vector<int> ids);
+  std::vector<User> read();
   void update(const User& user);
   void remove(int id);
   void remove(std::vector<int> ids);

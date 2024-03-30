@@ -1,13 +1,5 @@
 #include "app.service.h"
 
-struct User {
-  int id;
-  std::string name;
-
-  User() : id(0), name("") {}
-  User(int id, std::string name) : id(id), name(name) {}
-};
-
 void app_service::create(const User &data) {
   sql << "INSERT INTO users (id, name) VALUES (:id, :name)", soci::use(data.id), soci::use(data.name);
 };
@@ -22,32 +14,31 @@ void app_service::create(const std::vector<User>& data) {
   sql << "INSERT INTO users (id, name) VALUES (:id, :name)", soci::use(ids), soci::use(names);
 };
 
-User app_service::read(std::vector<int> ids) {
-  User user;
-  soci::indicator ind;
-  sql << "SELECT id, name FROM users WHERE id IN :ids", soci::use(ids),
-      into(user.id, ind), into(user.name, ind);
-
-  if (ind == soci::i_null) {
-    throw std::runtime_error("User not found");
+std::vector<app_service::User> app_service::read(std::vector<int> ids) {
+  std::vector<app_service::User> users;
+  soci::rowset<soci::row> rs = (sql.prepare << "SELECT id, name FROM users WHERE id IN :ids", soci::use(ids));
+  for (soci::row &r : rs) {
+    app_service::User user;
+    r.get<int>(0, user.id);
+    r.get<std::string>(1, user.name);
+    users.push_back(user);
   }
-
-  return user;
+  return users;
 };
 
-User app_service::read() {
-  User user;
-  soci::indicator ind;
-  sql << "SELECT id, name FROM users", into(user.id, ind), into(user.name, ind);
-
-  if (ind == soci::i_null) {
-    throw std::runtime_error("User not found");
+std::vector<app_service::User> app_service::read() {
+  std::vector<User> users;
+  soci::rowset<soci::row> rs = (sql.prepare << "SELECT id, name FROM users");
+  for (soci::row &r : rs) {
+    User user;
+    r.get<int>(0, user.id);
+    r.get<std::string>(1, user.name);
+    users.push_back(user);
   }
+  return users;
+} 
 
-  return user;
-};
-
-User app_service::app_service::read(int id) {
+app_service::User app_service::app_service::read(int id) {
   User user;
   soci::indicator ind;
   sql << "SELECT id, name FROM users WHERE id = :id", soci::use(id),

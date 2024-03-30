@@ -34,6 +34,11 @@ env::env(std::string envFile) : fileName(envFile), envVariables(loadEnvVariables
     std::cerr << "PORT Configuration Error: Specified value is out of range." << std::endl;
     env::PORT = env::HTTPS ? 443 : 80;
   }
+  try {
+    env::databaseConnection = env::getEnv("DATABASE_CONNECTION");
+  } catch (const std::invalid_argument &e) {
+    std::cerr << "Database Configuration Error: " << e.what() << std::endl;
+  }
 }
 
 int env::getPort() {
@@ -53,6 +58,9 @@ std::string env::getKey(){
 };
 std::string env::getPem(){
     return env::SSL_PEM;
+};
+std::string env::getDatabaseConnection(){
+    return env::databaseConnection;
 };
 
 std::string env::getEnv(const std::string &key) {
@@ -75,7 +83,16 @@ std::map<std::string, std::string> env::loadEnvVariables() {
       std::string value;
       if (key[0] == '#')
         continue;
+      if (key[0] == '\n')
+        continue;
       if (std::getline(is_line, value)) {
+        // Trim whitespace from key
+        key.erase(key.find_last_not_of(" \n\r\t") + 1);
+
+        // Trim whitespace and quotation marks from value
+        value.erase(0, value.find_first_not_of(" \n\r\t\""));
+        value.erase(value.find_last_not_of(" \n\r\t\"") + 1);
+
         env[key] = value;
       }
     }

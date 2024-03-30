@@ -1,11 +1,7 @@
 #ifndef ENVIRONMENT_H
 #define ENVIRONMENT_H
 
-#include <fstream>
-#include <iostream>
 #include <map>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <crow.h>
 #include <crow/app.h>
@@ -26,6 +22,7 @@ public:
   std::string getDatabaseConnection();
 
 private:
+  std::string databaseConnection;
   std::string fileName;
   std::map<std::string, std::string> envVariables;
   std::map<std::string, std::string> loadEnvVariables();
