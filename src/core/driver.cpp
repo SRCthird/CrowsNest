@@ -3,12 +3,11 @@
 
 int main() {
   crow::SimpleApp app;
+  env env(".env");
   
   // Import Controllers
-  controller ctrl(app);
-  app_controller app_ctrl(app);
-
-  std::cout << "App Controller Loaded" << std::endl;
+  controller ctrl(app, env);
+  app_controller app_ctrl(app, env);
   // End Import Controllers
   
   ctrl.run();
