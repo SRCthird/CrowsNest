@@ -9,16 +9,17 @@
 class controller {
 public:
   crow::SimpleApp &app;
-  controller(crow::SimpleApp &app) : app(app), env_(".env") {
-    port = env_.getPort();
-    hostname = env_.getHostname();
-    if (env_.getHttps()) {
-      if (!env_.getCert().empty() || !env_.getKey().empty()) {
+  env &env_;
+  controller(crow::SimpleApp &app, env &env) : app(app), env_(env) {
+    port = env.getPort();
+    hostname = env.getHostname();
+    if (env.getHttps()) {
+      if (!env.getCert().empty() || !env.getKey().empty()) {
         std::cout << "Cert and key found" << std::endl;
-        app.ssl_file(env_.getCert(), env_.getKey());
-      } else if (!env_.getPem().empty()) {
+        app.ssl_file(env.getCert(), env.getKey());
+      } else if (!env.getPem().empty()) {
         std::cout << "key found" << std::endl;
-        app.ssl_file(env_.getPem());
+        app.ssl_file(env.getPem());
       }
     }
 
@@ -56,7 +57,6 @@ public:
 
 private:
   std::string root = "/";
-  env env_;
   int port;
   std::string hostname;
 };
