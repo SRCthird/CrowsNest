@@ -3,4 +3,5 @@ dependencies.txt
 .cache/
 .env
 *.o
-driver
+CrowsNest
+sqlite3.db
