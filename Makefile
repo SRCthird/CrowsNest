@@ -34,7 +34,7 @@ test:
 	cd src/app && source ./test.sh
 
 clean:
-	rm -f CrowsNest src/driver.o src/app/*.o src/api/user/*.o src/core/*.o
+	rm -f src/driver.o src/app/*.o src/api/user/*.o src/core/*.o
 
 run:
 	sudo ./CrowsNest
