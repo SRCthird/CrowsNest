@@ -48,24 +48,26 @@ public:
     return page.render(ctx);
   }
 
-  void create(const User& data) {
+  User create(const User& user) {
     soci::session sql(soci::sqlite3, "db=sqlite3.db timeout=2 shared_cache=true");
     try {
       verifyConnection(sql);
-      sql << "INSERT INTO users (id, name) VALUES (:id, :name)", soci::use(data.id), soci::use(data.name);
+      sql << "INSERT INTO users (id, name) VALUES (:id, :name)", soci::use(user.id), soci::use(user.name);
     } catch (const std::exception& e) {
       std::cerr << "Error executing query: " << e.what() << std::endl;
     }
     sql.close();
+    User newUser = this->read(user.id);
+    return newUser;
   }
 
-  void create(const std::vector<User>& data) {
+   std::vector<User> create(const std::vector<User>& users) {
     soci::session sql(soci::sqlite3, "db=sqlite3.db timeout=2 shared_cache=true");
+    std::vector<int> ids;
     try {
       verifyConnection(sql);
-      std::vector<int> ids;
       std::vector<std::string> names;
-      for (const auto &user : data) {
+      for (const auto &user : users) {
         ids.push_back(user.id);
         names.push_back(user.name);
       }
@@ -74,6 +76,8 @@ public:
       std::cerr << "Error executing query: " << e.what() << std::endl;
     }
     sql.close();
+    std::vector<User> newUsers = this->read(ids);
+    return newUsers;
   };
 
   User read(int id) {
@@ -142,7 +146,7 @@ public:
     return std::vector<User>();
   }
 
-  void update(const User& user) {
+  User update(const User& user) {
     soci::session sql(soci::sqlite3, "db=sqlite3.db timeout=2 shared_cache=true");
     try {
       verifyConnection(sql);
@@ -151,9 +155,12 @@ public:
       std::cerr << "Error executing query: " << e.what() << std::endl;
     }
     sql.close();
+    User newUser = this->read(user.id);
+    return newUser;
   }
 
-  void remove(int id) {
+  User remove(int id) {
+    User user = this->read(id);
     soci::session sql(soci::sqlite3, "db=sqlite3.db timeout=2 shared_cache=true");
     try {
       verifyConnection(sql);
@@ -162,9 +169,12 @@ public:
       std::cerr << "Error executing query: " << e.what() << std::endl;
     }
     sql.close();
+    return user;
   }
 
-  void remove(const std::vector<int>& ids) {
+  std::vector<User> remove(const std::vector<int>& ids) {
+    std::vector<User> users;
+    users = this->read(ids);
     soci::session sql(soci::sqlite3, "db=sqlite3.db timeout=2 shared_cache=true");
     try {
       verifyConnection(sql);
@@ -175,6 +185,7 @@ public:
       std::cerr << "Error executing query: " << e.what() << std::endl;
     }
     sql.close();
+    return users;
   }
 
 private:
