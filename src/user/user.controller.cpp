@@ -1,42 +1,42 @@
-#include "app.controller.h"
-#include "app.service.h"
+#include "user.controller.h"
+#include "user.service.h"
 
-app_controller::app_controller(crow::SimpleApp &app, env &env_)
+user_controller::user_controller(crow::SimpleApp &app, env &env_)
     : app(app), env_(env_) {
-  app_controller::setRoot("/");
+  user_controller::setRoot("/");
 
 
-  app_service appService;
+  user_service userService;
 
-  /*app.route_dynamic(app_controller::route()).methods("GET"_method)
-  ([&appService]() { 
-    return appService.home(); 
+  /*app.route_dynamic(user_controller::route()).methods("GET"_method)
+  ([&userService]() { 
+    return userService.home(); 
   });*/
 
-  app.route_dynamic(app_controller::route()).methods("POST"_method)
-  ([&appService](const crow::request &req) {
-    app_service::User user;
+  app.route_dynamic(user_controller::route()).methods("POST"_method)
+  ([&userService](const crow::request &req) {
+    user_service::User user;
     try {
       crow::json::rvalue json = crow::json::load(req.body);
-      app_service::User data(json["id"].i(), json["name"].s());
+      user_service::User data(json["id"].i(), json["name"].s());
       int id;
-      user = appService.create(data);
+      user = userService.create(data);
     } catch (const std::exception &e) {
       return crow::response(500, e.what());
     }
     return crow::response(200, user.toJson().dump());
   });
 
-  app.route_dynamic(app_controller::route("/bulk")).methods("POST"_method)
-  ([&appService](const crow::request &req) {
-    std::vector<app_service::User> users;
+  app.route_dynamic(user_controller::route("/bulk")).methods("POST"_method)
+  ([&userService](const crow::request &req) {
+    std::vector<user_service::User> users;
     try {
       crow::json::rvalue json = crow::json::load(req.body);
-      std::vector<app_service::User> data;
+      std::vector<user_service::User> data;
       for (const auto &user : json) {
         data.emplace_back(user["id"].i(), user["name"].s());
       }
-      users = appService.create(data);
+      users = userService.create(data);
     } catch (const std::exception &e) {
       return crow::response(500, e.what());
     }
@@ -48,10 +48,10 @@ app_controller::app_controller(crow::SimpleApp &app, env &env_)
     return crow::response(200, crow::json::wvalue(jsonResponse).dump());
   });
 
-  app.route_dynamic(app_controller::route("/<int>")).methods("GET"_method)
-  ([&appService](int id) {
+  app.route_dynamic(user_controller::route("/<int>")).methods("GET"_method)
+  ([&userService](int id) {
     try {
-      app_service::User user = appService.read(id);
+      user_service::User user = userService.read(id);
       if (user.id == 0) {
         return crow::response(404, "User not found");
       }
@@ -61,8 +61,8 @@ app_controller::app_controller(crow::SimpleApp &app, env &env_)
     }
   });
 
-  app.route_dynamic(app_controller::route()).methods("GET"_method)
-  ([&appService](const crow::request &req) {
+  app.route_dynamic(user_controller::route()).methods("GET"_method)
+  ([&userService](const crow::request &req) {
     try {
       std::vector<int> ids;
       const char* idParam = req.url_params.get("id");
@@ -74,11 +74,11 @@ app_controller::app_controller(crow::SimpleApp &app, env &env_)
         }
       }
 
-      std::vector<app_service::User> users;
+      std::vector<user_service::User> users;
       if (!ids.empty()) {
-        users = appService.read(ids);
+        users = userService.read(ids);
       } else {
-        users = appService.read();
+        users = userService.read();
       }
 
       std::vector<crow::json::wvalue> jsonResponse;
@@ -92,24 +92,24 @@ app_controller::app_controller(crow::SimpleApp &app, env &env_)
     }
   });
 
-  app.route_dynamic(app_controller::route()).methods("PUT"_method)
-  ([&appService](const crow::request &req) {
-    app_service::User newUser;
+  app.route_dynamic(user_controller::route()).methods("PUT"_method)
+  ([&userService](const crow::request &req) {
+    user_service::User newUser;
     try {
       crow::json::rvalue json = crow::json::load(req.body);
-      app_service::User user(json["id"].i(), json["name"].s());
-      newUser = appService.update(user);
+      user_service::User user(json["id"].i(), json["name"].s());
+      newUser = userService.update(user);
     } catch (const std::exception &e) {
       return crow::response(500, e.what());
     }
     return crow::response(200, newUser.toJson().dump());
   });
 
-  app.route_dynamic(app_controller::route("/<int>")).methods("DELETE"_method)
-  ([&appService](int id) {
-    app_service::User user;
+  app.route_dynamic(user_controller::route("/<int>")).methods("DELETE"_method)
+  ([&userService](int id) {
+    user_service::User user;
     try {
-      user = appService.remove(id);
+      user = userService.remove(id);
       if (user.id == 0) {
         return crow::response(404, "User not found");
       }
@@ -119,9 +119,9 @@ app_controller::app_controller(crow::SimpleApp &app, env &env_)
     return crow::response(200, user.toJson().dump());
   });
 
-  app.route_dynamic(app_controller::route()).methods("DELETE"_method)
-  ([&appService](const crow::request &req) {
-    std::vector<app_service::User> users;
+  app.route_dynamic(user_controller::route()).methods("DELETE"_method)
+  ([&userService](const crow::request &req) {
+    std::vector<user_service::User> users;
     try {
       std::vector<int> ids;
       const char* idParam = req.url_params.get("id");
@@ -133,7 +133,7 @@ app_controller::app_controller(crow::SimpleApp &app, env &env_)
         }
       }
       if (!ids.empty()) {
-        users = appService.remove(ids);
+        users = userService.remove(ids);
       } else {
         throw std::runtime_error("No ids provided");
       }

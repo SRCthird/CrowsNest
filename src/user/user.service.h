@@ -1,5 +1,5 @@
-#ifndef APP_SERVICE_H
-#define APP_SERVICE_H 
+#ifndef USER_SERVICE_H
+#define USER_SERVICE_H 
 
 #include <crow.h>
 #include <crow/app.h>
@@ -10,7 +10,7 @@
 #include <soci/mysql/soci-mysql.h>
 #include <soci/sqlite3/soci-sqlite3.h>
 
-class app_service {
+class user_service {
 public:
   struct User {
       int id;
@@ -27,7 +27,7 @@ public:
       }
   };
 
-  app_service() {
+  user_service() {
     soci::session sql(soci::sqlite3, "db=sqlite3.db timeout=2 shared_cache=true");
     try {
       verifyConnection(sql);
@@ -196,4 +196,4 @@ private:
   }
 };
 
-#endif // APP_SERVICE_H
+#endif // USER_SERVICE_H  
