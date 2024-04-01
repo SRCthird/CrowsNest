@@ -13,7 +13,7 @@ app_controller::app_controller(crow::SimpleApp &app, env &env_)
     return appService.home(); 
   });*/
 
-  app.route_dynamic(app_controller::route("")).methods("POST"_method)
+  app.route_dynamic(app_controller::route()).methods("POST"_method)
   ([&appService](const crow::request &req) {
     app_service::User user;
     try {
@@ -27,7 +27,7 @@ app_controller::app_controller(crow::SimpleApp &app, env &env_)
     return crow::response(200, user.toJson().dump());
   });
 
-  app.route_dynamic(app_controller::route("bulk")).methods("POST"_method)
+  app.route_dynamic(app_controller::route("/bulk")).methods("POST"_method)
   ([&appService](const crow::request &req) {
     std::vector<app_service::User> users;
     try {
@@ -48,7 +48,7 @@ app_controller::app_controller(crow::SimpleApp &app, env &env_)
     return crow::response(200, crow::json::wvalue(jsonResponse).dump());
   });
 
-  app.route_dynamic(app_controller::route("<int>")).methods("GET"_method)
+  app.route_dynamic(app_controller::route("/<int>")).methods("GET"_method)
   ([&appService](int id) {
     try {
       app_service::User user = appService.read(id);
@@ -105,7 +105,7 @@ app_controller::app_controller(crow::SimpleApp &app, env &env_)
     return crow::response(200, newUser.toJson().dump());
   });
 
-  app.route_dynamic(app_controller::route("<int>")).methods("DELETE"_method)
+  app.route_dynamic(app_controller::route("/<int>")).methods("DELETE"_method)
   ([&appService](int id) {
     app_service::User user;
     try {
