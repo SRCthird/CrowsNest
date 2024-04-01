@@ -1,7 +1,7 @@
 #ifndef USER_CONTROLLER_H
 #define USER_CONTROLLER_H 
 
-#include "../core/environment.h"
+#include "../../core/environment.h"
 #include <soci/connection-pool.h>
 #include <soci/mysql/soci-mysql.h>
 #include <string>
@@ -9,7 +9,7 @@
 class user_controller {
 public:
   user_controller(crow::SimpleApp &app, env &env_);
-  void setRoot(std::string root) { this->root = root; }
+  void setRoot(std::string root) { this->root += root; }
   std::string route(const std::string append) { 
     if (append[0] == '/') {
       return this->root + append.substr(1); 
@@ -21,7 +21,7 @@ public:
 private:
   crow::SimpleApp &app;
   env &env_;
-  std::string root = "/";
+  std::string root = "/api";
 };
 
 #endif // USER_CONTROLLER_H 

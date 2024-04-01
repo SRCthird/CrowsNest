@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Base URL of your Crow application
-BASE_URL="http://localhost:18080"
+BASE_URL="http://localhost:18080/api/user"
 
 # Test creating a single user
 echo "Testing creating a single user:"

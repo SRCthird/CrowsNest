@@ -1,17 +1,9 @@
 #include "user.controller.h"
 #include "user.service.h"
 
-user_controller::user_controller(crow::SimpleApp &app, env &env_)
-    : app(app), env_(env_) {
-  user_controller::setRoot("/");
-
-
+user_controller::user_controller(crow::SimpleApp &app, env &env_): app(app), env_(env_) {
+  user_controller::setRoot("/user");
   user_service userService;
-
-  /*app.route_dynamic(user_controller::route()).methods("GET"_method)
-  ([&userService]() { 
-    return userService.home(); 
-  });*/
 
   app.route_dynamic(user_controller::route()).methods("POST"_method)
   ([&userService](const crow::request &req) {
