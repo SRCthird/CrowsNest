@@ -1,33 +1,27 @@
-driver: src/core/driver.o src/user/user.controller.o src/core/utils.o src/core/service.o src/core/environment.o
-	#g++ src/core/driver.o src/app/app.controller.o src/core/utils.o src/core/service.o src/core/environment.o -I/usr/include/mysql/ -o CrowsNest -lpthread -lssl -lcrypto  -lsoci_core -lsoci_mysql -lmysqlclient -DCROW_ENABLE_SSL
-	g++ src/core/driver.o src/user/user.controller.o src/core/utils.o src/core/service.o src/core/environment.o -I/usr/include/mysql/ -o CrowsNest -lpthread -lssl -lcrypto -lsoci_core -lsoci_sqlite3 -lsqlite3 -DCROW_ENABLE_SSL
+driver: src/driver.o src/app/app.controller.o src/api/user/user.controller.o src/core/environment.o
+	#g++ src/driver.o src/app/app.controller.o src/core/environment.o -I/usr/include/mysql/ -o CrowsNest -lpthread -lssl -lcrypto  -lsoci_core -lsoci_mysql -lmysqlclient -DCROW_ENABLE_SSL
+	g++ src/driver.o src/app/app.controller.o src/api/user/user.controller.o src/core/environment.o -I/usr/include/mysql/ -o CrowsNest -lpthread -lssl -lcrypto -lsoci_core -lsoci_sqlite3 -lsqlite3 -DCROW_ENABLE_SSL
 
-src/core/driver.o: src/core/driver.cpp
-	g++ -c src/core/driver.cpp -o src/core/driver.o -DCROW_ENABLE_SSL -I/usr/include/mysql/
+src/driver.o: src/driver.cpp
+	g++ -c src/driver.cpp -o src/driver.o -DCROW_ENABLE_SSL -I/usr/include/mysql/
 
-src/core/driver.cpp:
+src/driver.cpp:
 	$(error driver.cpp not found in /src/core)
 
-src/user/user.controller.o: src/user/user.controller.cpp src/user/user.service.h
-	g++ -c src/user/user.controller.cpp -o src/user/user.controller.o -DCROW_ENABLE_SSL -I/usr/include/mysql/
+src/app/app.controller.o: src/app/app.controller.cpp src/app/app.service.h
+	g++ -c src/app/app.controller.cpp -o src/app/app.controller.o -DCROW_ENABLE_SSL
 
-src/user/user.service.h:
-	$(error user.service.h not found in /src/user)
+src/app/app.service.h:
+	$(error app.service.h not found in /src/app)
 
-src/user/user.controller.cpp:
-	$(error user.controller.cpp not found in /src/user)
+src/api/user/user.controller.o: src/api/user/user.controller.cpp src/api/user/user.service.h
+	g++ -c src/api/user/user.controller.cpp -o src/api/user/user.controller.o -DCROW_ENABLE_SSL -I/usr/include/mysql/
 
-src/core/utils.o: src/core/utils.cpp
-	g++ -c src/core/utils.cpp -o src/core/utils.o
+src/api/user/user.service.h:
+	$(error user.service.h not found in /src/api/user)
 
-src/core/utils.cpp:
-	$(error utils.cpp not found in src/core)
-
-src/core/service.o: src/core/service.cpp
-	g++ -c src/core/service.cpp -o src/core/service.o
-
-src/core/service.cpp:
-	$(error service.cpp not found in src/core)
+src/api/user/user.controller.cpp:
+	$(error user.controller.cpp not found in /src/api/user)
 
 src/core/environment.o: src/core/environment.cpp
 	g++ -c src/core/environment.cpp -o src/core/environment.o 
@@ -36,10 +30,11 @@ src/core/environment.cpp:
 	$(error environment.cpp not found in src/core)
 
 test:
-	cd src/user && source ./test.sh
+	cd src/api/user && source ./test.sh
+	cd src/app && source ./test.sh
 
 clean:
-	rm -f src/user/*.o src/core/*.o
+	rm -f src/app/*.o src/api/user/*.o src/core/*.o
 
 run:
 	sudo ./CrowsNest
