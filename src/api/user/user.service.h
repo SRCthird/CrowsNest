@@ -39,45 +39,23 @@ public:
     sql.close();
   }
 
-  crow::mustache::rendered_template home() {
-    soci::session sql(soci::sqlite3, "db=sqlite3.db timeout=2 shared_cache=true");
-    auto page = crow::mustache::load("base.html");
-    crow::mustache::context ctx;
-    ctx["PUBLIC_URL"] = "/static";
-    ctx["content"] = crow::mustache::load("child.html").render_string();
-    return page.render(ctx);
-  }
-
   User create(const User& user) {
     soci::session sql(soci::sqlite3, "db=sqlite3.db timeout=2 shared_cache=true");
+    int lastId = user.id;
     try {
       verifyConnection(sql);
-      sql << "INSERT INTO users (id, name) VALUES (:id, :name)", soci::use(user.id), soci::use(user.name);
-    } catch (const std::exception& e) {
-      std::cerr << "Error executing query: " << e.what() << std::endl;
-    }
-    sql.close();
-    User newUser = this->read(user.id);
-    return newUser;
-  }
-
-   std::vector<User> create(const std::vector<User>& users) {
-    soci::session sql(soci::sqlite3, "db=sqlite3.db timeout=2 shared_cache=true");
-    std::vector<int> ids;
-    try {
-      verifyConnection(sql);
-      std::vector<std::string> names;
-      for (const auto &user : users) {
-        ids.push_back(user.id);
-        names.push_back(user.name);
+      if (user.id == 0) {
+        sql << "INSERT INTO users (name) VALUES (:name)", soci::use(user.name);
+        sql << "SELECT last_insert_rowid()", soci::into(lastId);
+      } else {
+        sql << "INSERT INTO users (id, name) VALUES (:id, :name)", soci::use(user.id), soci::use(user.name);
       }
-      sql << "INSERT INTO users (id, name) VALUES (:id, :name)", soci::use(ids), soci::use(names);
     } catch (const std::exception& e) {
       std::cerr << "Error executing query: " << e.what() << std::endl;
     }
     sql.close();
-    std::vector<User> newUsers = this->read(ids);
-    return newUsers;
+    User newUser = this->read(lastId);
+    return newUser;
   };
 
   User read(int id) {

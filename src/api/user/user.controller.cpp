@@ -10,8 +10,13 @@ user_controller::user_controller(crow::SimpleApp &app, env &env_): app(app), env
     user_service::User user;
     try {
       crow::json::rvalue json = crow::json::load(req.body);
-      user_service::User data(json["id"].i(), json["name"].s());
       int id;
+      if (json.has("id")) {
+        id = json["id"].i();
+      } else {
+        id = 0;
+      }
+      user_service::User data(id, json["name"].s());
       user = userService.create(data);
     } catch (const std::exception &e) {
       return crow::response(500, e.what());
@@ -22,18 +27,33 @@ user_controller::user_controller(crow::SimpleApp &app, env &env_): app(app), env
   app.route_dynamic(user_controller::route("/bulk")).methods("POST"_method)
   ([&userService](const crow::request &req) {
     std::vector<user_service::User> users;
+    std::vector<user_service::User> newUsers;
     try {
       crow::json::rvalue json = crow::json::load(req.body);
-      std::vector<user_service::User> data;
       for (const auto &user : json) {
-        data.emplace_back(user["id"].i(), user["name"].s());
+        int id;
+        if (user.has("id")) {
+          id = json["id"].i();
+        } else {
+          id = 0;
+        }
+        if (user.has("name")) {
+          newUsers.push_back(
+            userService.create(
+              user_service::User(id, user["name"].s())
+            )
+          );
+        } else {
+          newUsers.push_back(
+              user_service::User(id, "No name provided")
+          );
+        }
       }
-      users = userService.create(data);
     } catch (const std::exception &e) {
       return crow::response(500, e.what());
     }
     std::vector<crow::json::wvalue> jsonResponse;
-    for (const auto &user : users) {
+    for (const auto &user : newUsers) {
       jsonResponse.push_back(user.toJson());
     }
 
