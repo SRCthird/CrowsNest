@@ -11,8 +11,10 @@ public:
   user_controller(crow::SimpleApp &app, env &env_);
   void setRoot(std::string root) { this->root += root; }
   std::string route(const std::string append) { 
-    if (append[0] == '/') {
+    if (this->root.back() == '/' && append[0] == '/') {
       return this->root + append.substr(1); 
+    } else if (this->root.back() != '/' && append[0] != '/') {
+      return this->root + "/" + append; 
     }
     return this->root + append; 
   }
