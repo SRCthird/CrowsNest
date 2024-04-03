@@ -2,7 +2,7 @@ driver: src/driver.o src/app/app.controller.o src/api/user/user.controller.o src
 	#g++ src/driver.o src/app/app.controller.o src/core/environment.o -I/usr/include/mysql/ -o CrowsNest -lpthread -lssl -lcrypto  -lsoci_core -lsoci_mysql -lmysqlclient -DCROW_ENABLE_SSL
 	g++ src/driver.o src/app/app.controller.o src/api/user/user.controller.o src/core/environment.o -I/usr/include/mysql/ -o CrowsNest -lpthread -lssl -lcrypto -lsoci_core -lsoci_sqlite3 -lsqlite3 -DCROW_ENABLE_SSL
 
-src/driver.o: src/driver.cpp
+src/driver.o: src/driver.cpp src/core/routeManager.h
 	g++ -c src/driver.cpp -o src/driver.o -DCROW_ENABLE_SSL -I/usr/include/mysql/
 
 src/driver.cpp:
