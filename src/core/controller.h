@@ -2,15 +2,14 @@
 #define CONTROLLER_H
 
 #include "environment.h"
+#include "routeManager.h"
 #include "service.h"
 #include <iostream>
 #include <string>
 
 class controller {
 public:
-  crow::SimpleApp &app;
-  env &env_;
-  controller(crow::SimpleApp &app, env &env) : app(app), env_(env) {
+  controller(crow::SimpleApp &app, env &env, RouteManager &r) : app(app), env_(env), r(r) {
     port = env.getPort();
     hostname = env.getHostname();
     if (env.getHttps()) {
@@ -23,32 +22,28 @@ public:
       }
     }
 
-    controller::setRoot("/");
-
     service service;
+    r.addRoute(controller::route("favicon.ico"))
+    ([&service](const crow::request &req, crow::response &res) {
+      return service.staticDir(req, res, "favicon.ico");
+    });
 
-    app.route_dynamic(controller::route("favicon.ico"))(
-        [&service](const crow::request &req, crow::response &res) {
-          return service.staticDir(req, res, "favicon.ico");
-        });
+    r.addRoute(controller::route("manifest.json"))
+    ([&service](const crow::request &req, crow::response &res) {
+      return service.staticDir(req, res, "manifest.json");
+    });
 
-    app.route_dynamic(controller::route("manifest.json"))(
-        [&service](const crow::request &req, crow::response &res) {
-          return service.staticDir(req, res, "manifest.json");
-        });
+    r.addRoute(controller::route("logo192.png"))
+    ([&service](const crow::request &req, crow::response &res) {
+      return service.staticDir(req, res, "logo192.png");
+    });
 
-    app.route_dynamic(controller::route("logo192.png"))(
-        [&service](const crow::request &req, crow::response &res) {
-          return service.staticDir(req, res, "logo192.png");
-        });
-
-    app.route_dynamic(controller::route("logo512.png"))(
-        [&service](const crow::request &req, crow::response &res) {
-          return service.staticDir(req, res, "logo512.png");
-        });
+    r.addRoute(controller::route("logo512.png"))
+    ([&service](const crow::request &req, crow::response &res) {
+      return service.staticDir(req, res, "logo512.png");
+    });
   };
 
-  void setRoot(std::string root) { this->root = root; }
   std::string route(const std::string append) {
     return this->root + append;
   }
@@ -56,6 +51,9 @@ public:
   inline void run() { app.port(port).multithreaded().run(); };
 
 private:
+  crow::SimpleApp &app;
+  env &env_;
+  RouteManager &r;
   std::string root = "/";
   int port;
   std::string hostname;

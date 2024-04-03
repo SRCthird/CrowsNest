@@ -32,7 +32,6 @@ public:
     try {
       verifyConnection(sql);
       sql << "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)";
-      std::cout << "Table 'users' created or already exists." << std::endl;
     } catch (const std::exception& e) {
       std::cerr << "Error creating table: " << e.what() << std::endl;
     }

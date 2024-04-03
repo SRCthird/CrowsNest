@@ -1,11 +1,17 @@
 #include "user.controller.h"
 #include "user.service.h"
+#include "../../core/routeManager.h"
 
-user_controller::user_controller(crow::SimpleApp &app, env &env_): app(app), env_(env_) {
+user_controller::user_controller(RouteManager &r, env &env_): r(r), env_(env_) {
   user_controller::setRoot("/user");
   user_service userService;
 
-  app.route_dynamic(user_controller::route()).methods("POST"_method)
+  r.addRoute("GET", user_controller::route("hello"))
+  ([](const crow::request &req) {
+    return crow::response(200, "hello");
+  });
+
+  r.addRoute("POST", user_controller::route())
   ([&userService](const crow::request &req) {
     user_service::User user;
     try {
@@ -24,7 +30,7 @@ user_controller::user_controller(crow::SimpleApp &app, env &env_): app(app), env
     return crow::response(200, user.toJson().dump());
   });
 
-  app.route_dynamic(user_controller::route("/bulk")).methods("POST"_method)
+  r.addRoute("POST", user_controller::route("/bulk"))
   ([&userService](const crow::request &req) {
     std::vector<user_service::User> users;
     std::vector<user_service::User> newUsers;
@@ -60,7 +66,7 @@ user_controller::user_controller(crow::SimpleApp &app, env &env_): app(app), env
     return crow::response(200, crow::json::wvalue(jsonResponse).dump());
   });
 
-  app.route_dynamic(user_controller::route("/<int>")).methods("GET"_method)
+  r.addRoute("GET", user_controller::route("/<int>"))
   ([&userService](int id) {
     try {
       user_service::User user = userService.read(id);
@@ -73,7 +79,7 @@ user_controller::user_controller(crow::SimpleApp &app, env &env_): app(app), env
     }
   });
 
-  app.route_dynamic(user_controller::route()).methods("GET"_method)
+  r.addRoute("GET", user_controller::route())
   ([&userService](const crow::request &req) {
     try {
       std::vector<int> ids;
@@ -104,7 +110,7 @@ user_controller::user_controller(crow::SimpleApp &app, env &env_): app(app), env
     }
   });
 
-  app.route_dynamic(user_controller::route()).methods("PUT"_method)
+  r.addRoute("PATCH", user_controller::route())
   ([&userService](const crow::request &req) {
     user_service::User newUser;
     try {
@@ -117,7 +123,7 @@ user_controller::user_controller(crow::SimpleApp &app, env &env_): app(app), env
     return crow::response(200, newUser.toJson().dump());
   });
 
-  app.route_dynamic(user_controller::route("/<int>")).methods("DELETE"_method)
+  r.addRoute("DELETE", user_controller::route("/<int>"))
   ([&userService](int id) {
     user_service::User user;
     try {
@@ -131,7 +137,7 @@ user_controller::user_controller(crow::SimpleApp &app, env &env_): app(app), env
     return crow::response(200, user.toJson().dump());
   });
 
-  app.route_dynamic(user_controller::route()).methods("DELETE"_method)
+  r.addRoute("DELETE", user_controller::route())
   ([&userService](const crow::request &req) {
     std::vector<user_service::User> users;
     try {
