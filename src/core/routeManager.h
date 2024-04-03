@@ -40,17 +40,17 @@ public:
   crow::DynamicRule& addRoute(const std::string& method, const std::string& path) {
     crow::HTTPMethod crowMethod = methodFromString(method);
     routes_.push_back(method + " " + path);
-    return app_.route_dynamic(path).methods(crowMethod);
+    return app_.route_dynamic(std::string(path)).methods(crowMethod);
   }
 
   crow::DynamicRule& addRoute(crow::HTTPMethod& method, const std::string& path) {
     routes_.push_back(crow::method_name(method) + " " + path);
-    return app_.route_dynamic(path).methods(method);
+    return app_.route_dynamic(std::string(path)).methods(method);
   }
 
   crow::DynamicRule& addRoute(const std::string& path) {
     routes_.push_back("GET " + path);
-    return app_.route_dynamic(path);
+    return app_.route_dynamic(std::string(path));
   }
 
   void printRoutes() const {

@@ -15,7 +15,7 @@ public:
   app_service() {}
   user_service userSvc;
 
-  crow::mustache::rendered_template home() {
+  const crow::mustache::rendered_template home() {
     auto page = crow::mustache::load("base.html");
     auto child = crow::mustache::load("usersList.html");
 

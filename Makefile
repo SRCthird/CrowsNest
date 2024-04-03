@@ -9,7 +9,7 @@ src/driver.cpp:
 	$(error driver.cpp not found in /src/core)
 
 src/app/app.controller.o: src/app/app.controller.cpp src/app/app.service.h
-	g++ -c src/app/app.controller.cpp -o src/app/app.controller.o -DCROW_ENABLE_SSL
+	g++ -c src/app/app.controller.cpp -o src/app/app.controller.o -DCROW_ENABLE_SSL -I/usr/include/mysql/
 
 src/app/app.service.h:
 	$(error app.service.h not found in /src/app)

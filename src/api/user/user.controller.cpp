@@ -1,6 +1,5 @@
 #include "user.controller.h"
 #include "user.service.h"
-#include "../../core/routeManager.h"
 
 user_controller::user_controller(RouteManager &r, env &env_): r(r), env_(env_) {
   user_controller::setRoot("/user");
@@ -31,29 +30,20 @@ user_controller::user_controller(RouteManager &r, env &env_): r(r), env_(env_) {
   });
 
   addRoute("POST", "/bulk")
-  ([&userService](const crow::request &req) {
-    std::vector<user_service::User> users;
+  ([this, &userService](const crow::request &req) {
     std::vector<user_service::User> newUsers;
     try {
       crow::json::rvalue json = crow::json::load(req.body);
       for (const auto &user : json) {
-        int id;
+        int id = 0;
         if (user.has("id")) {
-          id = json["id"].i();
-        } else {
-          id = 0;
+          id = user["id"].i();
         }
+        std::string name = "No name provided";
         if (user.has("name")) {
-          newUsers.push_back(
-            userService.create(
-              user_service::User(id, user["name"].s())
-            )
-          );
-        } else {
-          newUsers.push_back(
-              user_service::User(id, "No name provided")
-          );
-        }
+          name = user["name"].s();
+          newUsers.push_back(userService.create(user_service::User(id, name)));
+        } 
       }
     } catch (const std::exception &e) {
       return crow::response(500, e.what());

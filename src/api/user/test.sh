@@ -5,7 +5,7 @@ BASE_URL="http://localhost:18080/api/user"
 
 # Test creating a single user
 echo "Testing creating a single user:"
-curl -X POST -H "Content-Type: application/json" -d '{"id": 1, "name": "John Doe"}' "$BASE_URL"
+curl -X POST -H "Content-Type: application/json" -d '{"id": 1, "name": "John Doe"}' "$BASE_URL/"
 echo -e "\n"
 
 # Test creating multiple users
@@ -20,7 +20,7 @@ echo -e "\n"
 
 # Test getting all users
 echo "Testing getting all users:"
-curl "$BASE_URL"
+curl "$BASE_URL/"
 echo -e "\n"
 
 # Test getting users by ids
@@ -30,7 +30,7 @@ echo -e "\n"
 
 # Test updating a user
 echo "Testing updating a user:"
-curl -X PUT -H "Content-Type: application/json" -d '{"id": 1, "name": "John Updated"}' "$BASE_URL"
+curl -X PATCH -H "Content-Type: application/json" -d '{"id": 1, "name": "John Updated"}' "$BASE_URL/"
 echo -e "\n"
 
 # Test deleting a single user
