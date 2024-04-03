@@ -21,6 +21,18 @@ public:
   }
   std::string route() { return this->root; }
 
+  crow::DynamicRule& addRoute(const std::string& method, const std::string& path) {
+    return r.addRoute(method, user_controller::route(path));
+  }
+
+  crow::DynamicRule& addRoute(crow::HTTPMethod& method, const std::string& path) {
+    return r.addRoute(method, user_controller::route(path));
+  }
+
+  crow::DynamicRule& addRoute(const std::string& path) {
+    return r.addRoute(user_controller::route(path));
+  }
+
 private:
   RouteManager &r;
   env &env_;

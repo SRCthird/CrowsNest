@@ -6,12 +6,12 @@ user_controller::user_controller(RouteManager &r, env &env_): r(r), env_(env_) {
   user_controller::setRoot("/user");
   user_service userService;
 
-  r.addRoute("GET", user_controller::route("hello"))
+  addRoute("GET", "hello")
   ([](const crow::request &req) {
     return crow::response(200, "hello");
   });
 
-  r.addRoute("POST", user_controller::route())
+  addRoute("POST", "/")
   ([&userService](const crow::request &req) {
     user_service::User user;
     try {
@@ -30,7 +30,7 @@ user_controller::user_controller(RouteManager &r, env &env_): r(r), env_(env_) {
     return crow::response(200, user.toJson().dump());
   });
 
-  r.addRoute("POST", user_controller::route("/bulk"))
+  addRoute("POST", "/bulk")
   ([&userService](const crow::request &req) {
     std::vector<user_service::User> users;
     std::vector<user_service::User> newUsers;
@@ -66,7 +66,7 @@ user_controller::user_controller(RouteManager &r, env &env_): r(r), env_(env_) {
     return crow::response(200, crow::json::wvalue(jsonResponse).dump());
   });
 
-  r.addRoute("GET", user_controller::route("/<int>"))
+  addRoute("GET", "/<int>")
   ([&userService](int id) {
     try {
       user_service::User user = userService.read(id);
@@ -79,7 +79,7 @@ user_controller::user_controller(RouteManager &r, env &env_): r(r), env_(env_) {
     }
   });
 
-  r.addRoute("GET", user_controller::route())
+  addRoute("GET", "/")
   ([&userService](const crow::request &req) {
     try {
       std::vector<int> ids;
@@ -110,7 +110,7 @@ user_controller::user_controller(RouteManager &r, env &env_): r(r), env_(env_) {
     }
   });
 
-  r.addRoute("PATCH", user_controller::route())
+  addRoute("PATCH", "/")
   ([&userService](const crow::request &req) {
     user_service::User newUser;
     try {
@@ -123,7 +123,7 @@ user_controller::user_controller(RouteManager &r, env &env_): r(r), env_(env_) {
     return crow::response(200, newUser.toJson().dump());
   });
 
-  r.addRoute("DELETE", user_controller::route("/<int>"))
+  addRoute("DELETE", "/<int>")
   ([&userService](int id) {
     user_service::User user;
     try {
@@ -137,7 +137,7 @@ user_controller::user_controller(RouteManager &r, env &env_): r(r), env_(env_) {
     return crow::response(200, user.toJson().dump());
   });
 
-  r.addRoute("DELETE", user_controller::route())
+  addRoute("DELETE", "/")
   ([&userService](const crow::request &req) {
     std::vector<user_service::User> users;
     try {
